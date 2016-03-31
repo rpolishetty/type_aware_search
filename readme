@@ -1,0 +1,17 @@
+Todo:
+1. use guttenberg project books as data source (in html format)
+2. extract the keywords and store in memchache (possibly) 
+3. create the catagory table to refer to keywords table
+
+
+Queries:
+best football team / player
+places to buy apple
+
+
+catagory : 
+sports
+foods 
+places
+movies 
+cars
