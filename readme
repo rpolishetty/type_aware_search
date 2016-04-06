@@ -2,7 +2,8 @@ Todo:
 1. use guttenberg project books as data source (in html format)
 2. extract the keywords and store in memchache (possibly) 
 3. create the catagory table to refer to keywords table
-
+4. how to categorize keywords to each catgeory
+5. how to find relevence within the search result
 
 Queries:
 best football team / player
