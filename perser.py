@@ -26,6 +26,7 @@ catagory_dict['relations'] = ['love','marriage','rose','amor']
 catagory_dict['sports'] = ['sports','cricket','golf','soccer','messi','ronaldo']
 
 similar_words_dict['love'] = [{'love':1,'marriage':.8,'couple':.6,'happy':.5,'affectionate':.7}]
+weight_dict = {'love':1,'marriage':.8,'couple':.6,'happy':.5,'affectionate':.7,'joy':1}
 similar_words_dict['need'] = [{'need':1,'require':.8,'essential':.7}]
 similar_words_dict['joy'] = [{'joy':1}]
 #db1 = pickledb.load('keywords.db', False)
@@ -80,19 +81,21 @@ def search(query, category):
         if item in similar_words_dict.keys():
             sim_item = similar_words_dict[item]
 
-        print (sim_item)
-        for token,value in sim_item.items():    
-            try:
+        #print (sim_item)
+        for dict_word in sim_item:
+
+            for token,value in dict_word.items():
+                try:
                 
-                if token in result.keys():
-                    result[token].append(index.get_documents(token))
-                    print("[added]", result[item])
-                else :
-                    result[token]=index.get_documents(token)
-                    #print("[created]", result[item])
-                    print("keys:", result.keys())
-            except Exception as e:
-                print ("Got error with ", token)
+                    if token in result.keys():
+                        result[token].append(index.get_documents(token))
+                        #print("[added]", result[item])
+                    else :
+                        result[token]=index.get_documents(token)
+                        #print("[created]", result[item])
+                        #print("keys:", result.keys())
+                except Exception as e:
+                    print ("Got error with ", token)
 
     return result    
 
@@ -102,7 +105,7 @@ def search(query, category):
 def get_search_result(user_catagory):
     result = []
     return_val = db2[user_catagory]
-    print(return_val)
+    #print(return_val)
     for item in return_val:
         for item in db1:
             result.append(db1[item])
@@ -113,12 +116,14 @@ def get_search_result(user_catagory):
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
+def find_final_result(data):
 
+    pass
 
 def user_interface():
-    query = input('enter your search string:')
+    query = raw_input('enter your search string:')
     print("1.sports \n 2.love\n")
-    category = input ('select catagory:')
+    category = raw_input ('select catagory:')
     search_in=''
     if category==1:
         search_in="sports"
@@ -130,23 +135,39 @@ def user_interface():
 # def print_db(db_name):
 #     print ("dumping db")
 #     print(db_name.getall())
-    
+
+
+
     
 if __name__=='__main__':
     #file_name=sys.argv[1]
     query, category = user_interface()
-    print(query,category)
-    listdir = listdir_fullpath('/Users/rohith/type_aware_search/data')
+    #print(query,category)
+    listdir = listdir_fullpath('./data')
     for file_name in listdir:
         #os.path.join(__file__,'data',file_name)
-        print (file_name)
+        #print (file_name)
         
         build_inv_index(file_name)
 
     #index.add_term_occurrence('love','null')
     #print(index.get_documents('love'))
     result = (search(query,category))
+    #relevence = {'file1':0,'file2':0,'file3':0,'file4':0,'file5':0,'file6':0,}
+    relevence = {}
+    print "----[intermediate result]-----"
     for key, value in result.items() :
-        print ("key:",key,"\n" ,value)
-        print ("------------\n")
+        print(key)
+        weight = weight_dict[key]
+        #print
+        for key1,item in value.items():
+            print ("url:{}\tfreq:{}".format(key1,item))
+            if key1 in relevence.keys():
+                relevence[key1] += item*weight
+            else:
+                relevence[key1] = item*weight
 
+
+        print ("------------\n")
+    print "final ranking:"
+    print relevence
